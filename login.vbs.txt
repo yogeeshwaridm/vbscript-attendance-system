@@ -1,0 +1,48 @@
+Option Explicit
+
+Dim username, password
+Dim fso, file, line, data
+Dim validLogin
+validLogin = False
+
+username = InputBox("Enter Username")
+password = InputBox("Enter Password")
+
+Set fso = CreateObject("Scripting.FileSystemObject")
+
+Set file = fso.OpenTextFile("users.txt", 1)
+
+Do Until file.AtEndOfStream
+
+    line = file.ReadLine
+    data = Split(line, ",")
+
+    If username = data(0) And password = data(1) Then
+        validLogin = True
+        Exit Do
+    End If
+
+Loop
+
+file.Close
+
+If validLogin Then
+
+    MsgBox "Login Successful!", vbInformation
+
+    Dim attendanceFile
+    Set attendanceFile = fso.OpenTextFile("attendance.txt", 8, True)
+
+    attendanceFile.WriteLine username & " logged in at " & Now
+
+    attendanceFile.Close
+
+    MsgBox "Attendance Marked!"
+
+Else
+
+    MsgBox "Invalid Username or Password", vbCritical
+
+End If
+
+Set fso = Nothing
